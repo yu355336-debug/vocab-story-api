@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>語彙物語 — Vocab Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Serif+SC:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --paper: #f5f0e8;
+    --paper-dark: #ede6d6;
+    --vermilion: #c0392b;
+    --gold: #b8860b;
+    --gold-light: #d4a017;
+    --mist: #8b7d6b;
+    --red-seal: #c0392b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Paper texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Vertical decorative lines */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; right: 80px;
+    width: 1px; height: 100vh;
+    background: linear-gradient(to bottom, transparent, var(--gold) 20%, var(--gold) 80%, transparent);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 64px;
+    position: relative;
+  }
+
+  header::before {
+    content: '語';
+    position: absolute;
+    top: -20px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 120px;
+    color: var(--paper-dark);
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 600;
+    line-height: 1;
+    z-index: -1;
+    letter-spacing: -5px;
+  }
+
+  .title-jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.5em;
+    color: var(--mist);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .title-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .title-main em {
+    font-style: italic;
+    color: var(--vermilion);
+  }
+
+  .title-sub {
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--mist);
+    letter-spacing: 0.2em;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 32px auto;
+    max-width: 300px;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  .divider-mark {
+    font-size: 18px;
+    color: var(--gold);
+    font-family: 'Noto Serif JP', serif;
+  }
+
+  /* Input section */
+  .input-section {
+    background: white;
+    border: 1px solid rgba(184,134,11,0.2);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04), inset 0 0 40px rgba(245,240,232,0.5);
+    position: relative;
+  }
+
+  .input-section::before {
+    content: '◈';
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--paper);
+    padding: 0 12px;
+    color: var(--gold);
+    font-size: 16px;
+  }
+
+  .section-label {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--mist);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--paper-dark);
+  }
+
+  .words-input {
+    width: 100%;
+    min-height: 120px;
+    border: 1px solid var(--paper-dark);
+    border-radius: 1px;
+    background: var(--paper);
+    padding: 16px 20px;
+    font-family: 'Noto Serif JP', 'Cormorant Garamond', serif;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.3s;
+    letter-spacing: 0.05em;
+  }
+
+  .words-input:focus {
+    border-color: var(--gold);
+    background: white;
+  }
+
+  .words-input::placeholder {
+    color: var(--mist);
+    opacity: 0.6;
+    font-style: italic;
+  }
+
+  .input-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--mist);
+    opacity: 0.8;
+    letter-spacing: 0.05em;
+  }
+
+  /* Options row */
+  .options-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .option-group label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--mist);
+    margin-bottom: 8px;
+    font-family: 'Noto Serif JP', serif;
+    text-transform: uppercase;
+  }
+
+  .option-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--paper-dark);
+    border-radius: 1px;
+    background: var(--paper);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b7d6b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+
+  /* Generate button */
+  .btn-generate {
+    display: block;
+    width: 100%;
+    margin-top: 28px;
+    padding: 18px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 1px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-generate::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(184,134,11,0.15), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-generate:hover::before { left: 100%; }
+  .btn-generate:hover { background: #2c2218; letter-spacing: 0.4em; }
+  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-generate .jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 12px;
+    font-weight: 300;
+    opacity: 0.6;
+    margin-left: 12px;
+  }
+
+  /* Word tags preview */
+  .word-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    min-height: 32px;
+  }
+
+  .word-tag {
+    padding: 4px 12px;
+    background: var(--paper-dark);
+    border: 1px solid rgba(184,134,11,0.3);
+    border-radius: 1px;
+    font-size: 13px;
+    font-family: 'Noto Serif JP', serif;
+    color: var(--ink);
+    animation: tagAppear 0.3s ease;
+  }
+
+  @keyframes tagAppear {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Loading */
+  .loading-section {
+    display: none;
+    text-align: center;
+    padding: 60px 40px;
+  }
+
+  .loading-section.active { display: block; }
+
+  .loading-brush {
+    width: 2px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--vermilion));
+    margin: 0 auto 24px;
+    animation: brushStroke 1.2s ease-in-out infinite;
+    transform-origin: top center;
+  }
+
+  @keyframes brushStroke {
+    0%, 100% { transform: scaleY(0); opacity: 0; }
+    50% { transform: scaleY(1); opacity: 1; }
+  }
+
+  .loading-text {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    letter-spacing: 0.4em;
+    color: var(--mist);
+  }
+
+  /* Story output */
+  .story-section {
+    display: none;
+    animation: fadeUp 0.6s ease;
+  }
+
+  .story-section.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .story-card {
+    background: white;
+    border: 1px solid rgba(184,134,11,0.15);
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  /* Red seal stamp */
+  .story-card::after {
+    content: '物語';
+    position: absolute;
+    top: 24px; right: 24px;
+    width: 52px; height: 52px;
+    border: 2px solid var(--red-seal);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--red-seal);
+    letter-spacing: 0.1em;
+    writing-mode: vertical-lr;
+    transform: rotate(8deg);
+    opacity: 0.6;
+  }
+
+  .story-header {
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid var(--paper-dark);
+  }
+
+  .story-date {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--mist);
+    font-family: 'Noto Serif JP', serif;
+    margin-bottom: 8px;
+  }
+
+  .story-title {
+    font-size: 26px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  /* Two column layout for story */
+  .story-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 32px;
+  }
+
+  .story-col {
+    padding: 0 24px;
+  }
+
+  .story-col:first-child {
+    border-right: 1px solid var(--paper-dark);
+    padding-left: 0;
+  }
+
+  .story-col:last-child {
+    padding-right: 0;
+  }
+
+  .col-label {
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--mist);
+    text-transform: uppercase;
+    font-family: 'Noto Serif JP', serif;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .col-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--paper-dark);
+  }
+
+  .story-text {
+    font-size: 15px;
+    line-height: 2;
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+  }
+
+  .story-text .highlight {
+    color: var(--vermilion);
+    font-weight: 600;
+    border-bottom: 1px dotted var(--vermilion);
+    cursor: help;
+    position: relative;
+  }
+
+  .cn-text {
+    font-size: 14px;
+    line-height: 2;
+    color: #3d3530;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 300;
+  }
+
+  /* Vocabulary grid */
+  .vocab-section {
+    padding: 24px 32px 32px;
+    border-top: 1px solid var(--paper-dark);
+  }
+
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .vocab-item {
+    padding: 12px 16px;
+    background: var(--paper);
+    border: 1px solid rgba(184,134,11,0.2);
+    border-left: 3px solid var(--gold);
+    position: relative;
+  }
+
+  .vocab-word {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    font-family: 'Noto Serif JP', serif;
+    margin-bottom: 4px;
+  }
+
+  .vocab-reading {
+    font-size: 11px;
+    color: var(--mist);
+    margin-bottom: 4px;
+    font-family: 'Noto Serif JP', serif;
+    letter-spacing: 0.1em;
+  }
+
+  .vocab-meaning {
+    font-size: 12px;
+    color: #5c5248;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* Action buttons */
+  .action-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .btn-action {
+    flex: 1;
+    padding: 14px;
+    border: 1px solid var(--paper-dark);
+    background: white;
+    border-radius: 1px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.25s;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-action:hover {
+    background: var(--paper);
+    border-color: var(--gold);
+  }
+
+  .btn-action.primary {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .btn-action.primary:hover {
+    background: #2c2218;
+  }
+
+  .btn-action svg { width: 16px; height: 16px; }
+
+  /* Notion success toast */
+  .toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 14px 20px;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    border-left: 3px solid var(--gold);
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+  }
+
+  .toast.show { transform: translateX(0); }
+
+  /* Notion modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,20,16,0.7);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--paper);
+    border: 1px solid rgba(184,134,11,0.3);
+    padding: 40px;
+    width: 480px;
+    max-width: 90vw;
+    position: relative;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .modal-title {
+    font-size: 22px;
+    font-style: italic;
+    margin-bottom: 8px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .modal-sub {
+    font-size: 12px;
+    color: var(--mist);
+    letter-spacing: 0.1em;
+    margin-bottom: 28px;
+    font-family: 'Noto Serif JP', serif;
+  }
+
+  .modal-input-group {
+    margin-bottom: 20px;
+  }
+
+  .modal-input-group label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--mist);
+    margin-bottom: 8px;
+    font-family: 'Noto Serif JP', serif;
+    text-transform: uppercase;
+  }
+
+  .modal-input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--paper-dark);
+    background: white;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    border-radius: 1px;
+    transition: border-color 0.2s;
+  }
+
+  .modal-input-group input:focus { border-color: var(--gold); }
+  .modal-input-group input::placeholder { color: var(--mist); opacity: 0.5; font-style: italic; }
+
+  .modal-help {
+    font-size: 11px;
+    color: var(--mist);
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+
+  .modal-help a { color: var(--gold); }
+
+  .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--mist);
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .wrapper { padding: 40px 20px; }
+    .story-columns { grid-template-columns: 1fr; }
+    .story-col:first-child { border-right: none; border-bottom: 1px solid var(--paper-dark); padding-bottom: 24px; margin-bottom: 24px; }
+    .options-row { grid-template-columns: 1fr; }
+    .title-main { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <!-- Header -->
+  <header>
+    <div class="title-jp">語彙強化ツール · Vocabulary Reinforcement</div>
+    <h1 class="title-main">Vocab <em>Story</em></h1>
+    <div class="title-sub">今日の単語で物語を紡ぐ · Weave today's words into a story</div>
+    <div class="divider"><span class="divider-mark">✦</span></div>
+  </header>
+
+  <!-- Input Section -->
+  <div class="input-section">
+    <div class="section-label">今日の単語 · Today's Words</div>
+    <textarea
+      class="words-input"
+      id="wordsInput"
+      placeholder="输入今天在 Anki 学的单词，用逗号或换行分隔&#10;例：嬉しい、悲しい、走る、食べる、静か..."
+      rows="5"
+    ></textarea>
+    <div class="word-tags" id="wordTags"></div>
+    <div class="input-hint">支持日语（汉字/假名）、英语、或混合输入 · 建议 10–25 个词</div>
+
+    <div class="options-row">
+      <div class="option-group">
+        <label>故事风格 · Story Style</label>
+        <select id="storyStyle">
+          <option value="slice-of-life">日常生活 Slice of Life</option>
+          <option value="adventure">冒险奇幻 Adventure</option>
+          <option value="mystery">悬疑推理 Mystery</option>
+          <option value="literary">文学散文 Literary Prose</option>
+          <option value="dialogue">对话场景 Dialogue Scene</option>
+        </select>
+      </div>
+      <div class="option-group">
+        <label>难度 · Level</label>
+        <select id="storyLevel">
+          <option value="N3-N4">N3–N4 日语中级</option>
+          <option value="N2">N2 日语中高级</option>
+          <option value="N1">N1 日语高级</option>
+          <option value="beginner">初级 Beginner</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-generate" id="generateBtn" onclick="generateStory()">
+      生成物語 · Generate Story
+      <span class="jp">物語を作る</span>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-section" id="loadingSection">
+    <div class="loading-brush"></div>
+    <div class="loading-text">物語を紡いでいます · Weaving your story...</div>
+  </div>
+
+  <!-- Story Output -->
+  <div class="story-section" id="storySection">
+    <div class="story-card" id="storyCard">
+      <div class="story-header">
+        <div class="story-date" id="storyDate"></div>
+        <div class="story-title" id="storyTitle"></div>
+      </div>
+      <div class="story-columns">
+        <div class="story-col">
+          <div class="col-label">原文 · Japanese / Original</div>
+          <div class="story-text" id="storyOriginal"></div>
+        </div>
+        <div class="story-col">
+          <div class="col-label">中文翻译 · Chinese Translation</div>
+          <div class="cn-text" id="storyChinese"></div>
+        </div>
+      </div>
+      <div class="vocab-section">
+        <div class="col-label">本日単語 · Today's Vocabulary</div>
+        <div class="vocab-grid" id="vocabGrid"></div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-action" onclick="copyStory()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        复制全文
+      </button>
+      <button class="btn-action" onclick="showNotionModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+        推送 Notion
+      </button>
+      <button class="btn-action primary" onclick="regenerate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+        重新生成
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Notion Modal -->
+<div class="modal-overlay" id="notionModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">推送到 Notion</div>
+    <div class="modal-sub">Send story to your Notion database</div>
+    <div class="modal-input-group">
+      <label>Notion API Key</label>
+      <input type="password" id="notionKey" placeholder="secret_xxxxxxxxxxxxxxxx" />
+      <div class="modal-help">在 <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a> 创建 Integration 获取</div>
+    </div>
+    <div class="modal-input-group">
+      <label>Database ID</label>
+      <input type="text" id="notionDbId" placeholder="32位字符的数据库ID" />
+      <div class="modal-help">打开 Notion 数据库页面，URL 中 notion.so/ 后的32位字符串</div>
+    </div>
+    <div class="modal-input-group">
+      <label>Notion Proxy URL</label>
+      <input type="text" id="notionProxyUrl" placeholder="https://your-domain.com/api/notion" />
+      <div class="modal-help">当前 Notion 请求需要经过你自己的后端代理；如果这里的地址受 Vercel 登录保护，就会显示 401，而不是 Notion 故障</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-action" onclick="closeModal()">取消</button>
+      <button class="btn-action primary" onclick="pushToNotion()">
+        确认推送
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// Word tag parsing
+document.getElementById('wordsInput').addEventListener('input', function() {
+  const raw = this.value;
+  const words = parseWords(raw);
+  renderTags(words);
+});
+
+function parseWords(text) {
+  return text
+    .split(/[,，、\n\r]+/)
+    .map(w => w.trim())
+    .filter(w => w.length > 0);
+}
+
+function renderTags(words) {
+  const container = document.getElementById('wordTags');
+  container.innerHTML = '';
+  words.slice(0, 30).forEach(w => {
+    const tag = document.createElement('span');
+    tag.className = 'word-tag';
+    tag.textContent = w;
+    container.appendChild(tag);
+  });
+}
+
+// Generate story
+async function generateStory() {
+  const input = document.getElementById('wordsInput').value.trim();
+  if (!input) {
+    showToast('请先输入今日单词 ✦');
+    return;
+  }
+
+  const words = parseWords(input);
+  if (words.length < 2) {
+    showToast('至少需要 2 个单词');
+    return;
+  }
+
+  const style = document.getElementById('storyStyle').value;
+  const level = document.getElementById('storyLevel').value;
+
+  document.getElementById('loadingSection').classList.add('active');
+  document.getElementById('storySection').classList.remove('active');
+  document.getElementById('generateBtn').disabled = true;
+
+  const styleMap = {
+    'slice-of-life': '日常生活场景，温暖细腻',
+    'adventure': '冒险奇幻，充满张力',
+    'mystery': '悬疑推理，引人入胜',
+    'literary': '文学散文，意境深远',
+    'dialogue': '自然对话场景，生动活泼'
+  };
+
+  const prompt = `You are a language learning story generator. Create a vocabulary reinforcement story using the following words.
+
+Words to include: ${words.join('、')}
+Style: ${styleMap[style]}
+Level: ${level}
+
+Requirements:
+1. Write a short story (150-250 words) in Japanese (or the language of the input words if not Japanese)
+2. Naturally incorporate ALL the given words - bold them using **word** markdown
+3. Keep the story at ${level} level
+4. Give the story an evocative title
+
+Respond ONLY in this exact JSON format (no markdown, no extra text):
+{
+  "title": "Story title in the original language",
+  "original": "The full story text, with target words marked as **word**",
+  "chinese": "Complete Chinese translation of the story, with translated words marked as **translation**",
+  "vocab": [
+    {
+      "word": "単語",
+      "reading": "たんご (if Japanese, otherwise leave empty)",
+      "meaning": "中文释义"
+    }
+  ]
+}`;
+
+  try {
+    const response = await fetch("https://api.deepseek.com/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer sk-11a17a811e8a4ca9bd5e28b31ab3ffd3"
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.choices[0].message.content;
+    
+    let parsed;
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      // Try extracting JSON from response
+      const match = text.match(/\{[\s\S]*\}/);
+      if (match) parsed = JSON.parse(match[0]);
+      else throw new Error('Failed to parse response');
+    }
+
+    renderStory(parsed, words);
+  } catch(err) {
+    console.error(err);
+    showToast('生成失败，请重试 · Generation failed');
+  } finally {
+    document.getElementById('loadingSection').classList.remove('active');
+    document.getElementById('generateBtn').disabled = false;
+  }
+}
+
+function markdownBold(text) {
+  return text.replace(/\*\*([^*]+)\*\*/g, '<span class="highlight" title="词汇单词">$1</span>');
+}
+
+function renderStory(data, words) {
+  // Date
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+  document.getElementById('storyDate').textContent = dateStr + ' · ' + words.length + '語';
+
+  // Title & story
+  document.getElementById('storyTitle').textContent = data.title || '無題';
+  document.getElementById('storyOriginal').innerHTML = markdownBold(data.original || '');
+  document.getElementById('storyChinese').innerHTML = markdownBold(data.chinese || '');
+
+  // Vocab grid
+  const grid = document.getElementById('vocabGrid');
+  grid.innerHTML = '';
+  const vocabList = data.vocab || words.map(w => ({ word: w, reading: '', meaning: '' }));
+  vocabList.forEach(v => {
+    const item = document.createElement('div');
+    item.className = 'vocab-item';
+    item.innerHTML = `
+      <div class="vocab-word">${v.word}</div>
+      ${v.reading ? `<div class="vocab-reading">${v.reading}</div>` : ''}
+      <div class="vocab-meaning">${v.meaning || '—'}</div>
+    `;
+    grid.appendChild(item);
+  });
+
+  document.getElementById('storySection').classList.add('active');
+  document.getElementById('storySection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Store for Notion
+  window._lastStory = data;
+  window._lastWords = words;
+}
+
+function regenerate() {
+  generateStory();
+}
+
+function copyStory() {
+  const data = window._lastStory;
+  if (!data) return;
+  
+  const text = `【${data.title}】\n\n${data.original.replace(/\*\*/g, '')}\n\n---中文翻译---\n\n${data.chinese.replace(/\*\*/g, '')}`;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('✦ 已复制到剪贴板');
+  });
+}
+
+// Notion integration
+function getDefaultNotionProxyUrl() {
+  if (window.location.protocol.startsWith('http')) {
+    return `${window.location.origin}/api/notion`;
+  }
+  return '';
+}
+
+function normalizeNotionProxyUrl(url) {
+  return (url || '').trim().replace(/\/+$/, '');
+}
+
+function showNotionModal() {
+  if (!window._lastStory) return;
+  // Load saved keys
+  const savedKey = localStorage.getItem('notion_key') || '';
+  const savedDb = localStorage.getItem('notion_db') || '';
+  const savedProxy = localStorage.getItem('notion_proxy_url') || getDefaultNotionProxyUrl();
+  document.getElementById('notionKey').value = savedKey;
+  document.getElementById('notionDbId').value = savedDb;
+  document.getElementById('notionProxyUrl').value = savedProxy;
+  document.getElementById('notionModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('notionModal').classList.remove('active');
+}
+
+async function pushToNotion() {
+  const key = document.getElementById('notionKey').value.trim();
+  const dbId = document.getElementById('notionDbId').value.trim().replace(/-/g, '');
+  const proxyUrl = normalizeNotionProxyUrl(document.getElementById('notionProxyUrl').value) || getDefaultNotionProxyUrl();
+  
+  if (!key || !dbId || !proxyUrl) {
+    showToast('请填写 API Key、Database ID 和代理地址');
+    return;
+  }
+
+  if (!/^[a-f0-9]{32}$/i.test(dbId)) {
+    showToast('Database ID 格式不对，应为 32 位十六进制字符');
+    return;
+  }
+
+  localStorage.setItem('notion_key', key);
+  localStorage.setItem('notion_db', dbId);
+  localStorage.setItem('notion_proxy_url', proxyUrl);
+
+  const data = window._lastStory;
+  const words = window._lastWords || [];
+  const today = new Date().toISOString().split('T')[0];
+
+  const notionBody = {
+    parent: { database_id: dbId },
+    properties: {
+      "名称": {
+        title: [{ text: { content: data.title || 'Vocab Story' } }]
+      },
+      "日期": {
+        date: { start: today }
+      },
+      "文本": {
+        rich_text: [{ text: { content: words.join('、') } }]
+      }
+    },
+    children: [
+      {
+        object: "block",
+        type: "heading_2",
+        heading_2: { rich_text: [{ text: { content: "📖 " + (data.title || '') } }] }
+      },
+      {
+        object: "block",
+        type: "paragraph",
+        paragraph: { rich_text: [{ text: { content: data.original?.replace(/\*\*/g, '') || '' } }] }
+      },
+      {
+        object: "block",
+        type: "divider",
+        divider: {}
+      },
+      {
+        object: "block",
+        type: "heading_3",
+        heading_3: { rich_text: [{ text: { content: "中文翻译" } }] }
+      },
+      {
+        object: "block",
+        type: "paragraph",
+        paragraph: { rich_text: [{ text: { content: data.chinese?.replace(/\*\*/g, '') || '' } }] }
+      },
+      {
+        object: "block",
+        type: "divider",
+        divider: {}
+      },
+      {
+        object: "block",
+        type: "heading_3",
+        heading_3: { rich_text: [{ text: { content: "📝 单词表" } }] }
+      },
+      ...((data.vocab || []).map(v => ({
+        object: "block",
+        type: "bulleted_list_item",
+        bulleted_list_item: {
+          rich_text: [{ text: { content: `${v.word}${v.reading ? '（' + v.reading + '）' : ''} — ${v.meaning}` } }]
+        }
+      })))
+    ]
+  };
+
+  try {
+    const res = await fetch(proxyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notionKey: key, body: notionBody })
+    });
+
+    const rawText = await res.text();
+    let result = null;
+
+    try {
+      result = rawText ? JSON.parse(rawText) : null;
+    } catch (parseError) {
+      result = null;
+    }
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        showToast('代理接口返回 401：这个 Vercel 地址很可能开启了登录保护，请换成你自己的公开后端地址');
+        return;
+      }
+
+      const message = result?.message || `代理接口返回 ${res.status}`;
+      showToast('推送失败：' + message);
+      return;
+    }
+
+    if (result.id) {
+      closeModal();
+      showToast('✦ 已成功推送到 Notion！');
+    } else {
+      showToast('推送失败：' + (result.message || '请检查 Key 和 Database ID'));
+    }
+  } catch(e) {
+    showToast('连接代理失败：请确认代理地址可访问，并且后端已允许跨域');
+  }
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Init date in header area
+(function() {
+  // nothing on load needed
+})();
+</script>
+</body>
+</html>
